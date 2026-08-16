@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mohamed & Zineb — Mariage</title>
+  
+  <!-- Polices Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       PALETTE & VARIABLES (Beige & Brun)
+       ========================================================= */
+    :root {
+      --bg-color: #efede7;
+      --card-bg: transparent;
+      --text-brown: #634735;
+      --text-muted: #8c7361;
+      --accent-gold: #c2a178;
+      --envelope-bg: #e2dcd3;
+      --envelope-flap: #d4ccc0;
+      --border-color: rgba(99, 71, 53, 0.15);
+      
+      --font-serif: 'Playfair Display', serif;
+      --font-cursive: 'Cormorant Garamond', serif;
+      --font-sans: 'Montserrat', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: #2b2520;
+      color: var(--text-brown);
+      font-family: var(--font-sans);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* =========================================================
+       ECRAN D'ACCUEIL : ENVELOPPE ANIMÉE (OVERLAY)
+       ========================================================= */
+    .envelope-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: #2b2520;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 1s ease, visibility 1s ease;
+      padding: 20px;
+    }
+
+    /* Enveloppe agrandie */
+    .envelope-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      height: 330px;
+      background-color: var(--envelope-bg);
+      border-radius: 12px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1000px;
+    }
+
+    /* Rabat de l'enveloppe */
+    .envelope-flap {
+      position: absolute;
+      top: 0; left: 0;
+      width: 0; height: 0;
+      border-left: 250px solid transparent;
+      border-right: 250px solid transparent;
+      border-top: 175px solid var(--envelope-flap);
+      transform-origin: top;
+      transition: transform 0.6s ease 0.2s, z-index 0.2s ease 0.4s;
+      z-index: 4;
+    }
+
+    /* Intérieur / Poche de l'enveloppe */
+    .envelope-pocket {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 100%;
+      border-left: 250px solid #dad3c7;
+      border-right: 250px solid #dad3c7;
+      border-bottom: 165px solid #cfc7ba;
+      border-radius: 0 0 12px 12px;
+      z-index: 3;
+    }
+
+    /* Carte d'invitation */
+    .envelope-card {
+      position: absolute;
+      width: 88%;
+      height: 85%;
+      background: var(--bg-color);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
+      z-index: 2;
+    }
+
+    .envelope-card .card-monogram {
+      font-family: var(--font-cursive);
+      font-size: 2.8rem;
+      font-style: italic;
+      color: var(--text-brown);
+      line-height: 1;
+    }
+
+    .envelope-card .card-names {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-brown);
+      margin-top: 8px;
+    }
+
+    .envelope-card .card-date {
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* Sceau de cire */
+    .wax-seal {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70px; height: 70px;
+      background: linear-gradient(135deg, #b89368 0%, #8c6a43 100%);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #ffffff;
+      font-family: var(--font-cursive);
+      font-size: 1.7rem;
+      font-style: italic;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 0 4px rgba(255,255,255,0.3);
+      z-index: 5;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      border: 2px dashed rgba(255,255,255,0.4);
+    }
+
+    .open-prompt {
+      margin-top: 28px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.72rem;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-4px); }
+    }
+
+    /* Animations au clic */
+    .envelope-wrapper.open .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .envelope-wrapper.open .wax-seal {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+    }
+
+    .envelope-wrapper.open .envelope-card {
+      transform: translateY(-120px);
+      z-index: 4;
+    }
+
+    .envelope-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* =========================================================
+       CONTENEUR PRINCIPAL DU SITE
+       ========================================================= */
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+      position: relative;
+      padding-bottom: 60px;
+      border: 3px solid #dcd6cd;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    /* --- PAGE ACCUEIL / BANNIÈRE --- */
+    .hero-section {
+      position: relative;
+      width: 100%;
+      height: 90vh;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 32px;
+      overflow: hidden;
+    }
+
+    .hero-background {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.05) 0%,
+        rgba(0, 0, 0, 0.15) 60%,
+        rgba(43, 37, 32, 0.4) 100%
+      );
+      z-index: 2;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+    }
+
+    /* --- CONTENU CONTINU --- */
+    .content-wrapper {
+      padding: 60px 28px 48px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 64px;
+    }
+
+    .main-header-block {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding-bottom: 56px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-block {
+      width: 100%;
+      background: transparent;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .monogram-main {
+      font-family: var(--font-cursive);
+      font-size: 3.8rem;
+      font-style: italic;
+      color: var(--text-brown);
+      line-height: 1;
+    }
+
+    .names-title-main {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      letter-spacing: 4px;
+      color: var(--text-brown);
+      text-transform: uppercase;
+      margin-top: 16px;
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-brown);
+      margin-bottom: 24px;
+    }
+
+    .section-title::after {
+      content: '✦';
+      display: block;
+      font-size: 0.55rem;
+      color: var(--accent-gold);
+      margin-top: 10px;
+    }
+
+    .countdown-section {
+      width: 100%;
+      max-width: 330px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 48px;
+      padding: 20px 24px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .countdown-box {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .time-card {
+      min-width: 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .time-num {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--text-brown);
+    }
+
+    .time-label {
+      font-size: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .events-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+      margin-bottom: 20px;
+    }
+
+    .details-card-centered {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .clock-illustration-large {
+      width: 100%;
+      max-width: 290px;
+      height: 185px;
+      object-fit: cover;
+      margin: 14px 0 10px 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .warm-quote {
+      font-family: var(--font-cursive);
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--text-brown);
+      line-height: 1.4;
+      margin: 8px 0;
+      padding: 0 10px;
+    }
+
+    .map-preview {
+      width: 100%;
+      height: 80px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      background: url('https://maps.googleapis.com/maps/api/staticmap?center=Nans-les-Pins&zoom=13&size=400x150&sensor=false') center/cover #e5e3df;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      margin-top: 24px;
+    }
+
+    .map-overlay {
+      background: rgba(99, 71, 53, 0.85);
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .btn-main {
+      width: 100%;
+      padding: 16px;
+      background-color: var(--text-brown);
+      color: #ffffff;
+      border: none;
+      border-radius: 25px;
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-main:hover {
+      background-color: var(--accent-gold);
+    }
+
+    .scroll-link-light {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 0.68rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+
+    .footer {
+      text-align: center;
+      padding-top: 36px;
+      border-top: 1px solid var(--border-color);
+      margin-top: 12px;
+    }
+
+    .footer a {
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= ÉCRAN D'ACCUEIL ENVELOPPE ================= -->
+  <div class="envelope-screen" id="envelopeScreen">
+    <div class="envelope-wrapper" id="envelopeWrapper" onclick="openEnvelope()">
+      <div class="envelope-flap"></div>
+      <div class="wax-seal">ZM</div>
+      <div class="envelope-card">
+        <div class="card-monogram">ZM</div>
+        <div class="card-names">Mohamed & Zineb</div>
+        <div class="card-date">23 Octobre 2026</div>
+      </div>
+      <div class="envelope-pocket"></div>
+    </div>
+    <div class="open-prompt">✦ Cliquez sur l'enveloppe pour ouvrir ✦</div>
+  </div>
+
+  <!-- ================= CONTENEUR DU SITE WEB ================= -->
+  <div class="app-container">
+
+    <!-- FAIRE-PART PRINCIPAL -->
+    <header class="hero-section">
+      <img src="frpart.png" alt="Faire-part officiel Mohamed et Zineb" class="hero-background">
+      <div class="hero-overlay"></div>
+
+      <div class="hero-content">
+        <a href="#details" class="scroll-link-light">Découvrir les détails ↓</a>
+      </div>
+    </header>
+
+    <!-- CONTENU DU SITE -->
+    <main class="content-wrapper" id="details">
+
+      <!-- BLOC EN-TÊTE PRINCIPAL -->
+      <section class="main-header-block">
+        <div class="monogram-main">ZM</div>
+        <div class="names-title-main">23 Octobre 2026</div>
+
+        <div class="countdown-section">
+          <div style="font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted);">
+            Compte à rebours
+          </div>
+          <div class="countdown-box">
+            <div class="time-card"><span class="time-num" id="days">--</span><span class="time-label">Jours</span></div>
+            <div class="time-card"><span class="time-num" id="hours">--</span><span class="time-label">Heures</span></div>
+            <div class="time-card"><span class="time-num" id="mins">--</span><span class="time-label">Mins</span></div>
+            <div class="time-card"><span class="time-num" id="secs">--</span><span class="time-label">Secs</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BLOC PROGRAMME & LIEU -->
+      <section class="section-block" id="programme">
+        <div class="section-title">Programme & Horaires</div>
+
+        <div class="events-container">
+          <!-- Cérémonie Civile -->
+          <div class="details-card-centered">
+            <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; color: var(--text-brown);">
+              Cérémonie Civile
+            </div>
+            
+            <img src="mairie.jpg" alt="Mairie" class="clock-illustration-large">
+            
+            <div style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 600; color: var(--text-brown); margin-top: 4px;">
+              14h00
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Mairie 13-14, Marseille</div>
+          </div>
+
+          <!-- Réception & Fête -->
+          <div class="details-card-centered">
+            <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; color: var(--text-brown);">
+              Réception & Fête
+            </div>
+
+            <img src="salle.jpeg" alt="Salle" class="clock-illustration-large">
+
+            <div style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 600; color: var(--text-brown); margin-top: 4px;">
+              18h30
+            </div>
+            
+            <div style="font-size: 0.8rem; font-weight: 500; color: var(--text-brown); margin-top: 4px;">
+              Le Château de Nans, Nans-les-Pins
+            </div>
+
+            <div class="warm-quote">
+              « Rien ne nous ferait plus plaisir que d'être entourés de vos sourires pour écrire le premier chapitre de notre nouvelle vie. »
+            </div>
+          </div>
+        </div>
+
+        <a href="https://maps.google.com/?q=Le+Chateau+de+Nans+Nans-les-Pins" target="_blank" class="map-preview">
+          <div class="map-overlay">📍 Voir sur Google Maps</div>
+        </a>
+      </section>
+
+      <!-- BLOC RSVP -->
+      <section class="section-block" id="rsvp">
+        <div class="section-title">RSVP</div>
+        
+        <p style="font-family: var(--font-cursive); font-size: 1.15rem; font-style: italic; color: var(--text-brown); max-width: 320px; margin: 0 auto 16px auto; line-height: 1.4;">
+          « Votre présence à nos côtés est le plus beau des cadeaux. Nous avons hâte de célébrer ce moment d’exception avec vous ! »
+        </p>
+
+        <p style="font-family: var(--font-serif); font-size: 0.9rem; line-height: 1.5; color: var(--text-brown); margin-bottom: 24px;">
+          Nous serions ravis de vous compter parmi nous.<br>
+          Merci de confirmer votre présence avant le <strong>23 Octobre 2026</strong>.
+        </p>
+
+        <!-- REMPLACEZ L'URL DANS HREF CI-DESSOUS PAR VOTRE VRAI LIEN GOOGLE FORMS -->
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfE9qC93WcUbAKBXQ3IHHnjuqVHJwwhPT-zYuIaNUPmJOrZoQ/viewform?usp=sharing&ouid=102406862110388105316" target="_blank" class="btn-main" style="max-width: 300px;">
+          Confirmer ma réponse ✨
+        </a>
+      </section>
+
+      <!-- PIED DE PAGE -->
+      <footer class="footer">
+        <div class="monogram-main" style="font-size: 2.2rem; margin-bottom: 12px;">Mohamed & Zineb</div>
+        <a href="#">↑ Retour en haut</a>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- SCRIPT JS -->
+  <script>
+    // --- ANIMATION D'OUVERTURE DE L'ENVELOPPE ---
+    function openEnvelope() {
+      const envelope = document.getElementById('envelopeWrapper');
+      const screen = document.getElementById('envelopeScreen');
+
+      envelope.classList.add('open');
+
+      setTimeout(() => {
+        screen.classList.add('hidden');
+      }, 1500);
+    }
+
+    // --- COMPTE À REBOURS ---
+    const weddingDate = new Date('October 23, 2026 14:00:00').getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const diff = weddingDate - now;
+
+      if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('days').innerText = String(days).padStart(2, '0');
+        document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+        document.getElementById('mins').innerText = String(minutes).padStart(2, '0');
+        document.getElementById('secs').innerText = String(seconds).padStart(2, '0');
+      }
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+
+</body>
+</html>
